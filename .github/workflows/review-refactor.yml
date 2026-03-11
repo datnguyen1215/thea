@@ -8,6 +8,7 @@ permissions:
   contents: read
   pull-requests: write
   issues: write
+  id-token: write
 
 jobs:
   refactor-review:
@@ -22,8 +23,7 @@ jobs:
         id: review
         uses: anthropics/claude-code-action@v1
         with:
-          model: "sonnet"
-          direct_prompt: |
+          prompt: |
             You are a senior software engineer reviewing this pull request for code quality and maintainability.
 
             Review the changes in this PR and suggest refactoring improvements.
