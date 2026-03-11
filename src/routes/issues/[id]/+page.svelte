@@ -11,10 +11,10 @@
 	);
 
 	const priorityColors: Record<string, string> = {
-		critical: '#dc3545',
-		high: '#fd7e14',
-		medium: '#ffc107',
-		low: '#198754'
+		critical: 'bg-red-600',
+		high: 'bg-orange-500',
+		medium: 'bg-yellow-400',
+		low: 'bg-green-600'
 	};
 
 	const statusLabels: Record<string, string> = {
@@ -98,49 +98,66 @@
 	};
 </script>
 
-<div class="header">
+<div class="flex items-start justify-between mb-6 gap-4">
 	<div>
-		<h1>#{data.issue.id} {data.issue.title}</h1>
-		<div class="meta">
-			<span class="priority-dot" style="background: {priorityColors[data.issue.priority]}"></span>
+		<h1 class="text-2xl font-bold">#{data.issue.id} {data.issue.title}</h1>
+		<div class="flex items-center gap-2 mt-2 text-sm text-gray-500">
+			<span class="inline-block w-2 h-2 rounded-full {priorityColors[data.issue.priority] ?? 'bg-gray-400'}"></span>
 			<span>{data.issue.priority}</span>
-			<span class="status-badge">{statusLabels[data.issue.status] ?? data.issue.status}</span>
-			<span class="date">Created {data.issue.createdAt.slice(0, 10)}</span>
+			<span class="rounded border border-gray-200 px-1.5 py-0.5 text-xs">
+				{statusLabels[data.issue.status] ?? data.issue.status}
+			</span>
+			<span class="text-xs">Created {data.issue.createdAt.slice(0, 10)}</span>
 		</div>
 	</div>
-	<div class="actions">
-		<a href="/issues/{data.issue.id}/edit" class="btn">Edit</a>
+	<div class="flex items-center gap-2">
+		<a
+			href="/issues/{data.issue.id}/edit"
+			class="rounded border border-gray-200 bg-white px-4 py-1.5 text-sm no-underline text-inherit cursor-pointer font-[inherit]"
+		>
+			Edit
+		</a>
 		<form method="POST" action="?/delete" use:enhance>
-			<button type="submit" class="btn btn-danger">Delete</button>
+			<button
+				type="submit"
+				class="rounded border border-red-600 bg-white px-4 py-1.5 text-sm text-red-600 cursor-pointer font-[inherit] hover:bg-red-600 hover:text-white"
+			>
+				Delete
+			</button>
 		</form>
 	</div>
 </div>
 
 {#if data.labels.length > 0}
-	<div class="labels">
+	<div class="flex gap-1.5 mb-6">
 		{#each data.labels as label (label.id)}
-			<span class="label-tag">{label.label}</span>
+			<span class="rounded bg-gray-200 px-2 py-0.5 text-xs">{label.label}</span>
 		{/each}
 	</div>
 {/if}
 
-<section class="description">
-	<h2>Description</h2>
+<section class="mb-8 rounded-lg border border-gray-200 bg-white p-5">
+	<h2 class="text-sm font-medium mb-3 text-gray-500 uppercase tracking-wide">Description</h2>
 	{#if renderedDescription}
-		<div class="markdown">{@html renderedDescription}</div>
+		<div class="leading-relaxed [&_pre]:bg-gray-100 [&_pre]:p-3 [&_pre]:rounded [&_pre]:overflow-x-auto [&_code]:bg-gray-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-[0.9em]">
+			{@html renderedDescription}
+		</div>
 	{:else}
-		<p class="empty">No description.</p>
+		<p class="text-gray-500 italic">No description.</p>
 	{/if}
 </section>
 
-<section class="status-actions">
-	<h2>Actions</h2>
-	<div class="status-buttons">
+<section class="mb-8">
+	<h2 class="text-sm font-medium mb-3 text-gray-500 uppercase tracking-wide">Actions</h2>
+	<div class="flex flex-wrap gap-2">
 		{#each ['open', 'in_progress', 'done', 'closed'] as s (s)}
 			{#if s !== data.issue.status}
 				<form method="POST" action="?/updateStatus" use:enhance>
 					<input type="hidden" name="status" value={s} />
-					<button type="submit" class="btn btn-sm">
+					<button
+						type="submit"
+						class="cursor-pointer rounded border border-gray-200 bg-white px-3 py-1 text-xs font-[inherit]"
+					>
 						Mark {statusLabels[s]}
 					</button>
 				</form>
@@ -149,18 +166,18 @@
 	</div>
 </section>
 
-<section class="agent-section">
-	<h2>Agent</h2>
+<section class="mb-8 rounded-lg border border-gray-200 bg-white p-5">
+	<h2 class="text-sm font-medium mb-3 text-gray-500 uppercase tracking-wide">Agent</h2>
 
 	{#if data.issue.agentSession}
-		<div class="agent-card">
-			<div class="agent-header">
-				<span class="agent-name">{data.issue.agentSession}</span>
-				<span class="agent-status active">assigned</span>
+		<div class="rounded-md bg-gray-50 p-4">
+			<div class="mb-3 flex items-center justify-between">
+				<span class="font-semibold font-mono">{data.issue.agentSession}</span>
+				<span class="rounded-full bg-green-100 px-2.5 py-0.5 text-xs text-green-800">assigned</span>
 			</div>
 
-			<div class="agent-actions">
-				<div class="send-form">
+			<div class="flex items-center gap-2">
+				<div class="flex flex-1 gap-2">
 					<input
 						type="text"
 						placeholder="Send message to agent..."
@@ -169,287 +186,51 @@
 							if (e.key === 'Enter') sendMessage();
 						}}
 						disabled={loading}
+						class="flex-1 rounded border border-gray-200 px-2.5 py-1.5 text-sm font-[inherit]"
 					/>
-					<button onclick={sendMessage} disabled={loading || !message.trim()}>
+					<button
+						onclick={sendMessage}
+						disabled={loading || !message.trim()}
+						class="cursor-pointer rounded border-none bg-indigo-500 px-3 py-1.5 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
+					>
 						Send
 					</button>
 				</div>
-				<button class="kill-btn" onclick={killAgent} disabled={loading}>
+				<button
+					onclick={killAgent}
+					disabled={loading}
+					class="cursor-pointer rounded border-none bg-red-600 px-3 py-1.5 text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
+				>
 					Kill
 				</button>
 			</div>
 		</div>
 	{:else}
-		<button class="spawn-btn" onclick={spawnAgent} disabled={loading}>
+		<button
+			onclick={spawnAgent}
+			disabled={loading}
+			class="cursor-pointer rounded border-none bg-green-600 px-5 py-2 text-base text-white disabled:cursor-not-allowed disabled:opacity-50"
+		>
 			{loading ? 'Spawning...' : 'Spawn Agent'}
 		</button>
 	{/if}
 </section>
 
-<section class="timeline">
-	<h2>Activity</h2>
+<section class="mb-8">
+	<h2 class="text-sm font-medium mb-3 text-gray-500 uppercase tracking-wide">Activity</h2>
 	{#if data.events.length === 0}
-		<p class="empty">No activity yet.</p>
+		<p class="text-gray-500 italic">No activity yet.</p>
 	{:else}
-		<ul class="event-list">
+		<ul class="list-none border-l-2 border-gray-200 pl-4">
 			{#each data.events as event (event.id)}
-				<li class="event-item">
-					<span class="event-type">{eventLabels[event.type] ?? event.type}</span>
+				<li class="flex items-baseline gap-3 py-2 text-sm">
+					<span class="font-medium">{eventLabels[event.type] ?? event.type}</span>
 					{#if formatDetail(event.type, event.detail)}
-						<span class="event-detail">{formatDetail(event.type, event.detail)}</span>
+						<span class="text-gray-500">{formatDetail(event.type, event.detail)}</span>
 					{/if}
-					<span class="event-date">{event.createdAt.slice(0, 16).replace('T', ' ')}</span>
+					<span class="text-gray-500 text-xs ml-auto">{event.createdAt.slice(0, 16).replace('T', ' ')}</span>
 				</li>
 			{/each}
 		</ul>
 	{/if}
 </section>
-
-<style>
-	.header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		margin-bottom: 1.5rem;
-		gap: 1rem;
-	}
-
-	h1 { font-size: 1.5rem; }
-	h2 {
-		font-size: 1rem;
-		margin-bottom: 0.75rem;
-		color: var(--text-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
-	.meta {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		margin-top: 0.5rem;
-		font-size: 0.85rem;
-		color: var(--text-muted);
-	}
-
-	.priority-dot {
-		width: 8px;
-		height: 8px;
-		border-radius: 50%;
-		display: inline-block;
-	}
-
-	.status-badge {
-		padding: 0.1rem 0.4rem;
-		border: 1px solid var(--border);
-		border-radius: 3px;
-		font-size: 0.75rem;
-	}
-
-	.date { font-size: 0.8rem; }
-
-	.actions {
-		display: flex;
-		gap: 0.5rem;
-		align-items: center;
-	}
-
-	.btn {
-		padding: 0.4rem 1rem;
-		border: 1px solid var(--border);
-		border-radius: 4px;
-		background: white;
-		cursor: pointer;
-		font-size: 0.85rem;
-		font-family: inherit;
-		text-decoration: none;
-		color: inherit;
-	}
-
-	.btn-danger {
-		color: var(--danger);
-		border-color: var(--danger);
-	}
-
-	.btn-danger:hover {
-		background: var(--danger);
-		color: white;
-	}
-
-	.btn-sm {
-		padding: 0.3rem 0.75rem;
-		font-size: 0.8rem;
-	}
-
-	.labels {
-		display: flex;
-		gap: 0.4rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.label-tag {
-		background: #e9ecef;
-		padding: 0.15rem 0.5rem;
-		border-radius: 3px;
-		font-size: 0.8rem;
-	}
-
-	section {
-		margin-bottom: 2rem;
-	}
-
-	.description {
-		background: white;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		padding: 1.25rem;
-	}
-
-	.markdown {
-		line-height: 1.7;
-	}
-
-	.markdown :global(pre) {
-		background: #f1f3f5;
-		padding: 0.75rem;
-		border-radius: 4px;
-		overflow-x: auto;
-	}
-
-	.markdown :global(code) {
-		background: #f1f3f5;
-		padding: 0.1rem 0.3rem;
-		border-radius: 3px;
-		font-size: 0.9em;
-	}
-
-	.empty {
-		color: var(--text-muted);
-		font-style: italic;
-	}
-
-	.status-actions .status-buttons {
-		display: flex;
-		gap: 0.5rem;
-		flex-wrap: wrap;
-	}
-
-	.agent-section {
-		padding: 1.25rem;
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		background: white;
-	}
-
-	.agent-card {
-		background: #f9f9f9;
-		padding: 1rem;
-		border-radius: 6px;
-	}
-
-	.agent-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 0.75rem;
-	}
-
-	.agent-name {
-		font-weight: 600;
-		font-family: monospace;
-	}
-
-	.agent-status {
-		padding: 0.2rem 0.6rem;
-		border-radius: 12px;
-		font-size: 0.8rem;
-		background: #eee;
-		color: #666;
-	}
-
-	.agent-status.active {
-		background: #d4edda;
-		color: #155724;
-	}
-
-	.agent-actions {
-		display: flex;
-		gap: 0.5rem;
-		align-items: center;
-	}
-
-	.send-form {
-		display: flex;
-		gap: 0.5rem;
-		flex: 1;
-	}
-
-	.send-form input {
-		flex: 1;
-		padding: 0.4rem 0.6rem;
-		border: 1px solid var(--border);
-		border-radius: 4px;
-	}
-
-	.send-form button,
-	.spawn-btn,
-	.kill-btn {
-		padding: 0.4rem 0.8rem;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-		font-size: 0.9rem;
-	}
-
-	.send-form button {
-		background: var(--primary);
-		color: #fff;
-	}
-
-	.spawn-btn {
-		background: var(--success);
-		color: #fff;
-		padding: 0.5rem 1.2rem;
-		font-size: 1rem;
-	}
-
-	.kill-btn {
-		background: var(--danger);
-		color: #fff;
-	}
-
-	.send-form button:disabled,
-	.spawn-btn:disabled,
-	.kill-btn:disabled {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-
-	.event-list {
-		list-style: none;
-		border-left: 2px solid var(--border);
-		padding-left: 1rem;
-	}
-
-	.event-item {
-		padding: 0.5rem 0;
-		display: flex;
-		gap: 0.75rem;
-		align-items: baseline;
-		font-size: 0.85rem;
-	}
-
-	.event-type {
-		font-weight: 500;
-	}
-
-	.event-detail {
-		color: var(--text-muted);
-	}
-
-	.event-date {
-		color: var(--text-muted);
-		font-size: 0.75rem;
-		margin-left: auto;
-	}
-</style>

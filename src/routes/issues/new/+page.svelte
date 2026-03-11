@@ -4,26 +4,35 @@
 	let { form } = $props();
 </script>
 
-<h1>New Issue</h1>
+<h1 class="mb-6 text-2xl font-bold">New Issue</h1>
 
 {#if form?.error}
-	<p class="error">{form.error}</p>
+	<p class="text-red-600 mb-4">{form.error}</p>
 {/if}
 
-<form method="POST" use:enhance class="form">
-	<label class="field">
-		<span>Title</span>
-		<input type="text" name="title" required class="input" />
+<form method="POST" use:enhance class="max-w-[600px] flex flex-col gap-4">
+	<label class="flex flex-col gap-1">
+		<span class="text-sm font-medium">Title</span>
+		<input
+			type="text"
+			name="title"
+			required
+			class="rounded border border-gray-200 px-2.5 py-2 text-sm font-[inherit]"
+		/>
 	</label>
 
-	<label class="field">
-		<span>Description</span>
-		<textarea name="description" rows="8" class="input"></textarea>
+	<label class="flex flex-col gap-1">
+		<span class="text-sm font-medium">Description</span>
+		<textarea
+			name="description"
+			rows="8"
+			class="rounded border border-gray-200 px-2.5 py-2 text-sm font-[inherit] resize-y"
+		></textarea>
 	</label>
 
-	<label class="field">
-		<span>Priority</span>
-		<select name="priority" class="input">
+	<label class="flex flex-col gap-1">
+		<span class="text-sm font-medium">Priority</span>
+		<select name="priority" class="rounded border border-gray-200 px-2.5 py-2 text-sm font-[inherit]">
 			<option value="low">Low</option>
 			<option value="medium" selected>Medium</option>
 			<option value="high">High</option>
@@ -31,80 +40,28 @@
 		</select>
 	</label>
 
-	<label class="field">
-		<span>Labels</span>
-		<input type="text" name="labels" placeholder="comma-separated" class="input" />
+	<label class="flex flex-col gap-1">
+		<span class="text-sm font-medium">Labels</span>
+		<input
+			type="text"
+			name="labels"
+			placeholder="comma-separated"
+			class="rounded border border-gray-200 px-2.5 py-2 text-sm font-[inherit]"
+		/>
 	</label>
 
-	<div class="actions">
-		<button type="submit" class="btn btn-primary">Create Issue</button>
-		<a href="/issues" class="btn">Cancel</a>
+	<div class="flex gap-2 mt-2">
+		<button
+			type="submit"
+			class="cursor-pointer rounded border border-indigo-500 bg-indigo-500 px-5 py-2 text-sm text-white font-[inherit] hover:bg-indigo-600"
+		>
+			Create Issue
+		</button>
+		<a
+			href="/issues"
+			class="rounded border border-gray-200 bg-white px-5 py-2 text-sm no-underline text-inherit font-[inherit]"
+		>
+			Cancel
+		</a>
 	</div>
 </form>
-
-<style>
-	h1 { margin-bottom: 1.5rem; }
-
-	.form {
-		max-width: 600px;
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-	}
-
-	.field span {
-		font-size: 0.85rem;
-		font-weight: 500;
-	}
-
-	.input {
-		padding: 0.5rem 0.6rem;
-		border: 1px solid var(--border);
-		border-radius: 4px;
-		font-size: 0.875rem;
-		font-family: inherit;
-	}
-
-	textarea.input {
-		resize: vertical;
-	}
-
-	.actions {
-		display: flex;
-		gap: 0.5rem;
-		margin-top: 0.5rem;
-	}
-
-	.btn {
-		padding: 0.5rem 1.25rem;
-		border: 1px solid var(--border);
-		border-radius: 4px;
-		background: white;
-		cursor: pointer;
-		font-size: 0.875rem;
-		font-family: inherit;
-		text-decoration: none;
-		color: inherit;
-	}
-
-	.btn-primary {
-		background: var(--primary);
-		color: white;
-		border-color: var(--primary);
-	}
-
-	.btn-primary:hover {
-		background: var(--primary-hover);
-	}
-
-	.error {
-		color: var(--danger);
-		margin-bottom: 1rem;
-	}
-</style>

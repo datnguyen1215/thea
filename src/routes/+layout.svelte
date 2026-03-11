@@ -1,112 +1,39 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
+	import '../app.css';
 
 	let { data, children } = $props();
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<style>
-		:root {
-			--bg: #f8f9fa;
-			--bg-sidebar: #1a1a2e;
-			--text: #212529;
-			--text-muted: #6c757d;
-			--text-sidebar: #e0e0e0;
-			--text-sidebar-active: #ffffff;
-			--border: #dee2e6;
-			--primary: #4361ee;
-			--primary-hover: #3a56d4;
-			--danger: #dc3545;
-			--success: #198754;
-			--warning: #fd7e14;
-			--badge-bg: rgba(255, 255, 255, 0.15);
-			font-family: system-ui, -apple-system, sans-serif;
-		}
-
-		* { box-sizing: border-box; margin: 0; padding: 0; }
-
-		body {
-			background: var(--bg);
-			color: var(--text);
-			line-height: 1.5;
-		}
-	</style>
 </svelte:head>
 
-<div class="app-shell">
-	<nav class="sidebar">
-		<div class="sidebar-brand">thea</div>
-		<ul class="sidebar-nav">
-			<li><a href="/">Dashboard</a></li>
+<div class="flex min-h-screen">
+	<nav class="w-55 shrink-0 bg-[#1a1a2e] text-gray-300 py-4">
+		<div class="text-xl font-bold px-5 pb-6 text-white tracking-wide">thea</div>
+		<ul class="list-none">
 			<li>
-				<a href="/issues">
+				<a href="/" class="flex items-center justify-between px-5 py-2.5 text-gray-300 no-underline text-sm transition-[background] duration-150 hover:bg-white/[0.08] hover:text-white">
+					Dashboard
+				</a>
+			</li>
+			<li>
+				<a href="/issues" class="flex items-center justify-between px-5 py-2.5 text-gray-300 no-underline text-sm transition-[background] duration-150 hover:bg-white/[0.08] hover:text-white">
 					Issues
 					{#if data.openIssues > 0}
-						<span class="badge">{data.openIssues}</span>
+						<span class="bg-white/15 px-2 py-0.5 rounded-xl text-xs">{data.openIssues}</span>
 					{/if}
 				</a>
 			</li>
-			<li><a href="/agents">Agents</a></li>
+			<li>
+				<a href="/agents" class="flex items-center justify-between px-5 py-2.5 text-gray-300 no-underline text-sm transition-[background] duration-150 hover:bg-white/[0.08] hover:text-white">
+					Agents
+				</a>
+			</li>
 		</ul>
 	</nav>
-	<main class="content">
+	<main class="flex-1 p-8 max-w-[1100px]">
 		{@render children()}
 	</main>
 </div>
-
-<style>
-	.app-shell {
-		display: flex;
-		min-height: 100vh;
-	}
-
-	.sidebar {
-		width: 220px;
-		background: var(--bg-sidebar);
-		color: var(--text-sidebar);
-		padding: 1rem 0;
-		flex-shrink: 0;
-	}
-
-	.sidebar-brand {
-		font-size: 1.25rem;
-		font-weight: 700;
-		padding: 0.5rem 1.25rem 1.5rem;
-		color: var(--text-sidebar-active);
-		letter-spacing: 0.05em;
-	}
-
-	.sidebar-nav {
-		list-style: none;
-	}
-
-	.sidebar-nav li a {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 0.6rem 1.25rem;
-		color: var(--text-sidebar);
-		text-decoration: none;
-		font-size: 0.9rem;
-		transition: background 0.15s;
-	}
-
-	.sidebar-nav li a:hover {
-		background: rgba(255, 255, 255, 0.08);
-		color: var(--text-sidebar-active);
-	}
-
-	.badge {
-		background: var(--badge-bg);
-		padding: 0.1rem 0.5rem;
-		border-radius: 10px;
-		font-size: 0.75rem;
-	}
-
-	.content {
-		flex: 1;
-		padding: 2rem;
-		max-width: 1100px;
-	}
-</style>
