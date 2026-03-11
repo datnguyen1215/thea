@@ -1,0 +1,55 @@
+name: "PR Review: Code Quality"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  refactor-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for API key
+        id: check
+        run: echo "has_key=${{ secrets.ANTHROPIC_API_KEY != '' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout repository
+        if: steps.check.outputs.has_key == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run code quality review with Claude Code
+        if: steps.check.outputs.has_key == 'true'
+        id: review
+        uses: anthropics/claude-code-action@v1
+        with:
+          prompt: |
+            You are a senior software engineer reviewing this pull request for code quality and maintainability.
+
+            Review the changes in this PR and suggest refactoring improvements.
+
+            Focus on:
+            - Code readability and clarity
+            - DRY principle violations (duplicated logic)
+            - Function and variable naming conventions
+            - Single responsibility principle adherence
+            - Overly complex or deeply nested logic
+            - Dead code or unused variables
+            - Consistent coding style and patterns
+            - Proper error handling patterns
+            - Appropriate use of abstractions
+            - Code organization and module structure
+
+            For each suggestion:
+            - Reference the specific file and line(s)
+            - Explain why the change improves maintainability
+            - Provide a concrete code suggestion when possible
+
+            Be pragmatic. Only suggest changes that meaningfully improve code quality. Avoid nitpicking or purely stylistic preferences that don't impact readability or maintainability.
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

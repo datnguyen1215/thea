@@ -1,0 +1,55 @@
+name: "PR Review: Feature Correctness"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  feature-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for API key
+        id: check
+        run: echo "has_key=${{ secrets.ANTHROPIC_API_KEY != '' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout repository
+        if: steps.check.outputs.has_key == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run feature correctness review with Claude Code
+        if: steps.check.outputs.has_key == 'true'
+        id: review
+        uses: anthropics/claude-code-action@v1
+        with:
+          prompt: |
+            You are a senior software engineer reviewing this pull request to verify the feature works correctly.
+
+            Review the changes in this PR for functional correctness.
+
+            Focus on:
+            - Whether the implementation matches the stated intent (PR title, description, linked issue)
+            - Logic errors, off-by-one errors, and edge cases
+            - Missing error handling for expected failure modes
+            - Correct API usage and data flow
+            - Boundary conditions and null/undefined handling
+            - Whether tests adequately cover the new behavior
+            - Missing test cases for edge cases or error paths
+            - Backward compatibility with existing functionality
+            - Potential regressions in related features
+            - Race conditions or timing issues in async code
+
+            For each concern:
+            - Reference the specific file and line(s)
+            - Describe the scenario where the code would fail or behave incorrectly
+            - Suggest a fix or improvement
+
+            Be constructive. Confirm what works well in addition to flagging issues. Focus on things that could actually break in production.
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
