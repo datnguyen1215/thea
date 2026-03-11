@@ -13,12 +13,18 @@ jobs:
   feature-review:
     runs-on: ubuntu-latest
     steps:
+      - name: Check for API key
+        id: check
+        run: echo "has_key=${{ secrets.ANTHROPIC_API_KEY != '' }}" >> "$GITHUB_OUTPUT"
+
       - name: Checkout repository
+        if: steps.check.outputs.has_key == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Run feature correctness review with Claude Code
+        if: steps.check.outputs.has_key == 'true'
         id: review
         uses: anthropics/claude-code-action@v1
         with:
