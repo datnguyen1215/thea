@@ -1,0 +1,51 @@
+name: "PR Review: Security"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  security-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run security review with Claude Code
+        id: review
+        uses: anthropics/claude-code-action@v1
+        with:
+          model: "sonnet"
+          direct_prompt: |
+            You are a senior security engineer reviewing this pull request.
+
+            Review the changes in this PR for security vulnerabilities and concerns.
+
+            Focus on:
+            - Injection vulnerabilities (SQL injection, command injection, XSS, etc.)
+            - Authentication and authorization issues
+            - Sensitive data exposure (hardcoded secrets, API keys, credentials)
+            - Insecure dependencies or configurations
+            - Input validation and sanitization gaps
+            - OWASP Top 10 vulnerabilities
+            - Race conditions and concurrency issues
+            - Insecure cryptographic practices
+            - Path traversal and file access issues
+
+            For each issue found, specify:
+            - Severity (critical, high, medium, low)
+            - The affected file and line(s)
+            - A clear description of the vulnerability
+            - A recommended fix
+
+            If no security issues are found, confirm the PR looks secure from a security standpoint.
+
+            Be thorough but avoid false positives. Only flag genuine security concerns.
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
