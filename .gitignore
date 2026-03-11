@@ -1,0 +1,8 @@
+node_modules/
+.svelte-kit/
+data/
+drizzle/meta/
+build/
+.env
+.env.*
+!.env.example
