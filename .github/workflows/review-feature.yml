@@ -8,7 +8,6 @@ permissions:
   contents: read
   pull-requests: write
   issues: write
-  id-token: write
 
 jobs:
   feature-review:
@@ -47,3 +46,4 @@ jobs:
 
             Be constructive. Confirm what works well in addition to flagging issues. Focus on things that could actually break in production.
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
